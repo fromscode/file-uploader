@@ -1,5 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 
+import bcrypt from "bcrypt";
+import { prisma } from "../config/db/prisma.js";
+
 import validators from "../middlewares/validators.js";
 import { matchedData, validationResult } from "express-validator";
 import BadRequest400 from "../errors/BadRequest400.js";
@@ -22,7 +25,16 @@ const login = [
 
     const { username, password } = matchedData(req);
 
-    // TO-DO link with db
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      res.sendStatus(401);
+      return;
+    }
 
     res.sendStatus(200);
   },
@@ -42,9 +54,33 @@ const register = [
 
     const { username, password, email } = matchedData(req);
 
-    // Implement hashing
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // TO-DO link with db
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ username }, { email }],
+      },
+    });
+
+    if (existingUser) {
+      res.sendStatus(409);
+      return;
+    }
+
+    await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+        folders: {
+          create: [
+            {
+              name: "Home",
+            },
+          ],
+        },
+      },
+    });
 
     res.sendStatus(201);
   },

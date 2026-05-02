@@ -2,7 +2,15 @@
 (These might change as the project develops)
 
 - POST /login 
+    returns:
+        1. 400 Bad Request (validation error)
+        2. 401 if invalid username or password
+        3. 200 otherwise in case of successfull login
 - POST /register
+    returns:
+        1. 400 Bad Request (validation error)
+        2. 409 Conflict (if username or email already exists)
+        3. 201 Created (otherwise if successfull registration)
 - PUT /edit -> edit profile details
 - GET /home -> The base directory
 - POST /create -> create folder
