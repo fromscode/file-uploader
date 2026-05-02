@@ -7,5 +7,9 @@ export default function (
   res: Response,
   next: NextFunction,
 ) {
-  res.sendStatus(err.status || 500);
+  if (err.status && err.status == 400) {
+    res.status(400).json({
+      errors: err.errors!,
+    });
+  } else res.sendStatus(err.status || 500);
 }
