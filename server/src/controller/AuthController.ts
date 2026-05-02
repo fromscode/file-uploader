@@ -6,6 +6,7 @@ import { prisma } from "../config/db/prisma.js";
 import validators from "../middlewares/validators.js";
 import { matchedData, validationResult } from "express-validator";
 import BadRequest400 from "../errors/BadRequest400.js";
+import passport from "passport";
 
 const getLanding = [
   async (req: Request, res: Response, next: NextFunction) => {
@@ -15,27 +16,13 @@ const getLanding = [
 
 const login = [
   validators.validateUsername,
-  validators.validatePassword,
-  async (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
-    if (!result.isEmpty()) {
-      next(new BadRequest400(result.array()));
-      return;
-    }
-
-    const { username, password } = matchedData(req);
-
-    const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      res.sendStatus(401);
-      return;
-    }
-
+    if (!result.isEmpty()) next(new BadRequest400(result.array()));
+    else next();
+  },
+  passport.authenticate("local"),
+  (req: Request, res: Response, next: NextFunction) => {
     res.sendStatus(200);
   },
 ];

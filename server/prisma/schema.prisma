@@ -53,3 +53,12 @@ model File {
 
   @@map("files")
 }
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+
+  @@map("sessions")
+}
