@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 
-import validators from "../../middlewares/validators";
+import validators from "../middlewares/validators.js";
 import { matchedData, validationResult } from "express-validator";
-import BadRequest400 from "../../errors/BadRequest400";
+import BadRequest400 from "../errors/BadRequest400.js";
 
 const getLanding = [
   async (req: Request, res: Response, next: NextFunction) => {

@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { HTTPError } from "../types";
+import type { NextFunction, Request, Response } from "express";
+import type { HTTPError } from "../../types.js";
 
 export default function (
   err: HTTPError,

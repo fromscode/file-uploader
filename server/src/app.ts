@@ -1,9 +1,9 @@
 import express from "express";
 
-import router from "./routes";
+import router from "./routes/index.js";
 
-import errorHandler from "../middlewares/errorHandler";
-import notFoundHandler from "../middlewares/notFoundHandler";
+import errorHandler from "./middlewares/errorHandler.js";
+import notFoundHandler from "./middlewares/notFoundHandler.js";
 
 const app = express();
 
