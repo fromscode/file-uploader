@@ -1,7 +1,6 @@
 import express from "express";
 
 import auth from "../controller/AuthController";
-import passport from "passport";
 import FolderController from "../controller/FolderController";
 import isAuthenticated from "../middlewares/isAuthenticated";
 
@@ -19,4 +18,5 @@ router.get("/home", isAuthenticated, FolderController.home);
 
 router.post("/create", isAuthenticated, FolderController.create);
 
+router.get("/folder/:id", isAuthenticated, FolderController.getFolder);
 export default router;

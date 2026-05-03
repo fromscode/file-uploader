@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 const validateUsername = body("username")
   .trim()
@@ -33,15 +33,24 @@ const validateFolderName = (param: string) =>
     .notEmpty()
     .withMessage("Folder name cannot be empty");
 
-const validateFolderId = (param: string) =>
-  body(param)
-    .trim()
-    .isInt({
-      min: 1,
-      max: 2 * 31 - 1,
-    })
-    .withMessage("Folder id must be a valid numeric id")
-    .toInt();
+const validateFolderId = (name: string, place: "body" | "param" = "body") =>
+  place == "param"
+    ? param(name)
+        .trim()
+        .isInt({
+          min: 1,
+          max: 2 * 31 - 1,
+        })
+        .withMessage("Folder id must be a valid numeric id")
+        .toInt()
+    : body(name)
+        .trim()
+        .isInt({
+          min: 1,
+          max: 2 * 31 - 1,
+        })
+        .withMessage("Folder id must be a valid numeric id")
+        .toInt();
 
 export default {
   validateUsername,

@@ -66,7 +66,57 @@ const create = [
   },
 ];
 
+const getFolder = [
+  validators.validateFolderId("id", "param"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = validationResult(req);
+      if (!result.isEmpty()) {
+        return next(new BadRequest400(result.array()));
+      }
+
+      const { id } = matchedData(req);
+
+      const currentFolder = await prisma.folder.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!currentFolder)
+        return res.status(400).json({
+          error: "folder not found",
+        });
+
+      if (currentFolder.userId !== req.user!.id) {
+        res.sendStatus(403);
+      }
+
+      const folders = await prisma.folder.findMany({
+        where: {
+          parentId: id,
+        },
+      });
+
+      const files = await prisma.file.findMany({
+        where: {
+          folderId: id,
+        },
+      });
+
+      res.json({
+        currentFolder,
+        folders,
+        files,
+      });
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
+
 export default {
   home,
   create,
+  getFolder,
 };
