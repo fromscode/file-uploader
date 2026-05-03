@@ -19,4 +19,7 @@ router.get("/home", isAuthenticated, FolderController.home);
 router.post("/create", isAuthenticated, FolderController.create);
 
 router.get("/folder/:id", isAuthenticated, FolderController.getFolder);
+
+router.delete("/folder/:id", isAuthenticated, FolderController.deleteFolder);
+
 export default router;

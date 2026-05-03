@@ -89,7 +89,7 @@ const getFolder = [
         });
 
       if (currentFolder.userId !== req.user!.id) {
-        res.sendStatus(403);
+        return res.sendStatus(403);
       }
 
       const folders = await prisma.folder.findMany({
@@ -115,8 +115,54 @@ const getFolder = [
   },
 ];
 
+const deleteFolder = [
+  validators.validateFolderId("id", "param"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = validationResult(req);
+      if (!result.isEmpty()) {
+        return next(new BadRequest400(result.array()));
+      }
+
+      const { id } = matchedData(req);
+
+      const currentFolder = await prisma.folder.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!currentFolder)
+        return res.status(400).json({
+          error: "folder not found",
+        });
+
+      if (currentFolder.userId !== req.user!.id) {
+        res.sendStatus(403);
+      }
+
+      if (!currentFolder.parentId) {
+        return res.status(400).json({
+          error: "Can not delete home folder",
+        });
+      }
+
+      await prisma.folder.delete({
+        where: {
+          id,
+        },
+      });
+
+      res.sendStatus(204);
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
+
 export default {
   home,
   create,
   getFolder,
+  deleteFolder,
 };

@@ -28,9 +28,9 @@ model Folder {
   id     Int    @id @default(autoincrement())
   name   String
   userId Int    @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  parent   Folder? @relation("FolderToFolder", fields: [parentId], references: [id])
+  parent   Folder? @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
   parentId Int?    @map("parent_id")
 
   folders Folder[] @relation("FolderToFolder")
@@ -46,10 +46,10 @@ model File {
   url  String
 
   folderId Int    @map("folder_id")
-  folder   Folder @relation(fields: [folderId], references: [id])
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("files")
 }
