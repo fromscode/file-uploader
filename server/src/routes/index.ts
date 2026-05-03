@@ -30,5 +30,8 @@ router.post("/upload", isAuthenticated, FileController.upload);
 router.delete("/file/:id", isAuthenticated, FileController.deleteFile);
 
 router.put("/file/:id", isAuthenticated, FileController.renameFile);
+4;
+
+// TO-DO: Add routes for searching, sorting and filtering folders and files
 
 export default router;
