@@ -13,6 +13,8 @@ router.post("/login", auth.login);
 
 router.post("/register", auth.register);
 
+router.get("/logout", isAuthenticated, auth.logout);
+
 router.get("/folder", isAuthenticated, FolderController.folder);
 
 export default router;

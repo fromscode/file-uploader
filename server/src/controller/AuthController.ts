@@ -73,8 +73,24 @@ const register = [
   },
 ];
 
+const logout = [
+  (req: Request, res: Response, next: NextFunction) => {
+    req.logout((err) => {
+      if (err) return next(err);
+
+      req.session.destroy((err) => {
+        if (err) return next(err);
+
+        res.clearCookie("connect.sid");
+        res.sendStatus(200);
+      });
+    });
+  },
+];
+
 export default {
   getLanding,
   login,
   register,
+  logout,
 };
