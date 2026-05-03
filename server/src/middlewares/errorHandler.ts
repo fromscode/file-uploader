@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { HTTPError } from "../../types.js";
+import type { HTTPError } from "../types.js";
 
 export default function (
   err: HTTPError,
@@ -7,6 +7,7 @@ export default function (
   res: Response,
   next: NextFunction,
 ) {
+  console.error(err);
   if (err.status && err.status == 400) {
     res.status(400).json({
       errors: err.errors!,
