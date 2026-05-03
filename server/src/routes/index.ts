@@ -22,4 +22,6 @@ router.get("/folder/:id", isAuthenticated, FolderController.getFolder);
 
 router.delete("/folder/:id", isAuthenticated, FolderController.deleteFolder);
 
+router.put("/folder/:id", isAuthenticated, FolderController.renameFolder);
+
 export default router;

@@ -174,9 +174,51 @@ const deleteFolder = [
   },
 ];
 
+const renameFolder = [
+  validators.validateFolderId("id", "param"),
+  validators.validateFolderName("name"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = validationResult(req);
+      if (!result.isEmpty()) {
+        return next(new BadRequest400(result.array()));
+      }
+
+      const { id, name } = matchedData(req);
+
+      const currentFolder = await prisma.folder.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!currentFolder)
+        return res.status(400).json({
+          error: "folder not found",
+        });
+
+      if (currentFolder.userId !== req.user!.id) {
+        res.sendStatus(403);
+      }
+
+      await prisma.folder.update({
+        data: {
+          name,
+        },
+        where: { id },
+      });
+
+      res.sendStatus(200);
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
+
 export default {
   home,
   create,
   getFolder,
   deleteFolder,
+  renameFolder,
 };
