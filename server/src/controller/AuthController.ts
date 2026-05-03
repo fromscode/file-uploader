@@ -6,7 +6,7 @@ import { prisma } from "../config/db/prisma.js";
 import validators from "../middlewares/validators.js";
 import { matchedData, validationResult } from "express-validator";
 import BadRequest400 from "../errors/BadRequest400.js";
-import passport from "passport";
+import passport, { use } from "passport";
 
 const getLanding = [
   async (req: Request, res: Response, next: NextFunction) => {
@@ -41,8 +41,6 @@ const register = [
 
     const { username, password, email } = matchedData(req);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ username }, { email }],
@@ -50,15 +48,22 @@ const register = [
     });
 
     if (existingUser) {
-      res.sendStatus(409);
-      return;
+      const fields = [];
+      if (existingUser.email === email) fields.push("email");
+      if (existingUser.username === username) fields.push("username");
+
+      return res.status(409).json({
+        fields,
+      });
     }
 
-    await prisma.user.create({
+    const hashedPass = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
       data: {
         username,
         email,
-        password: hashedPassword,
+        password: hashedPass,
         folders: {
           create: [
             {
@@ -69,7 +74,11 @@ const register = [
       },
     });
 
-    res.sendStatus(201);
+    req.login(user, (err) => {
+      if (err) return next(err);
+
+      return res.sendStatus(201);
+    });
   },
 ];
 
