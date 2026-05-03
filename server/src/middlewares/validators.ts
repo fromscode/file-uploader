@@ -54,6 +54,41 @@ const validateFolderId = (name: string, place: "body" | "param" = "body") =>
         .withMessage("Folder id must be a valid numeric id")
         .toInt();
 
+const validateFileName = (name: string) =>
+  body(name)
+    .trim()
+    .notEmpty()
+    .withMessage("File name cannot be empty")
+    .matches(/^[a-zA-Z_]+[a-zA-Z0-9 _\-]*$/v)
+    .withMessage("File name is invalid");
+
+const validateFIleURL = (name: string) =>
+  body(name)
+    .trim()
+    .notEmpty()
+    .withMessage("File url cannot be empty")
+    .isURL()
+    .withMessage("File url is invalid");
+
+const validateFileId = (name: string, place: "body" | "param" = "body") =>
+  place == "param"
+    ? param(name)
+        .trim()
+        .isInt({
+          min: 1,
+          max: 2 * 31 - 1,
+        })
+        .withMessage("File id must be a valid numeric id")
+        .toInt()
+    : body(name)
+        .trim()
+        .isInt({
+          min: 1,
+          max: 2 * 31 - 1,
+        })
+        .withMessage("File id must be a valid numeric id")
+        .toInt();
+
 export default {
   validateUsername,
   validateEmail,
@@ -62,4 +97,8 @@ export default {
 
   validateFolderName,
   validateFolderId,
+
+  validateFileName,
+  validateFIleURL,
+  validateFileId,
 };

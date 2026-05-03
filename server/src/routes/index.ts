@@ -3,6 +3,7 @@ import express from "express";
 import auth from "../controller/AuthController";
 import FolderController from "../controller/FolderController";
 import isAuthenticated from "../middlewares/isAuthenticated";
+import FileController from "../controller/FileController";
 
 const router = express.Router();
 
@@ -23,5 +24,11 @@ router.get("/folder/:id", isAuthenticated, FolderController.getFolder);
 router.delete("/folder/:id", isAuthenticated, FolderController.deleteFolder);
 
 router.put("/folder/:id", isAuthenticated, FolderController.renameFolder);
+
+router.post("/upload", isAuthenticated, FileController.upload);
+
+router.delete("/file/:id", isAuthenticated, FileController.deleteFile);
+
+router.put("/file/:id", isAuthenticated, FileController.renameFile);
 
 export default router;
