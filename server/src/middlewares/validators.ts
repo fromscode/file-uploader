@@ -28,10 +28,12 @@ const validateConfirmPassword = body("confirm-password")
 const validateFolderName = (param: string) =>
   body(param)
     .trim()
-    .isAlphanumeric()
-    .withMessage("Folder name must be alpha numeric")
     .notEmpty()
-    .withMessage("Folder name cannot be empty");
+    .withMessage("Folder name cannot be empty")
+    .matches(/^[a-zA-Z_]+[a-zA-Z0-9 _\-]*$/v)
+    .withMessage(
+      "Folder name must begin with an alphabet or underscore and must not contain special characters",
+    );
 
 const validateFolderId = (name: string, place: "body" | "param" = "body") =>
   place == "param"

@@ -51,6 +51,20 @@ const create = [
 
       const { folderName, parentId } = matchedData(req);
 
+      const parent = await prisma.folder.findUnique({
+        where: {
+          id: parentId,
+        },
+      });
+
+      if (!parent) {
+        return res.status(400).json({
+          error: "Parent folder not found",
+        });
+      }
+
+      if (parent.userId !== req.user!.id) return res.sendStatus(403);
+
       await prisma.folder.create({
         data: {
           name: folderName,
