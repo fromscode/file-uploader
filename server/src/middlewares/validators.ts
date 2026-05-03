@@ -25,9 +25,30 @@ const validateConfirmPassword = body("confirm-password")
   .custom((value, { req }) => value === req.body.password)
   .withMessage("Password and Confirm Password fields must match");
 
+const validateFolderName = (param: string) =>
+  body(param)
+    .trim()
+    .isAlphanumeric()
+    .withMessage("Folder name must be alpha numeric")
+    .notEmpty()
+    .withMessage("Folder name cannot be empty");
+
+const validateFolderId = (param: string) =>
+  body(param)
+    .trim()
+    .isInt({
+      min: 1,
+      max: 2 * 31 - 1,
+    })
+    .withMessage("Folder id must be a valid numeric id")
+    .toInt();
+
 export default {
   validateUsername,
   validateEmail,
   validatePassword,
   validateConfirmPassword,
+
+  validateFolderName,
+  validateFolderId,
 };
