@@ -9,9 +9,14 @@ export default function App() {
     setIsLoginDisplayed((p) => !p);
   }
 
-  return isLoginDisplayed ? (
+  return <>
+  <section className="flex justify-center">
+    {isLoginDisplayed ? (
     <Login toggleDisplay={toggleDisplay} />
   ) : (
     <Register toggleDisplay={toggleDisplay} />
-  );
+  )}
+  </section>
+  
+  </>
 }

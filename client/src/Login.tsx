@@ -35,17 +35,22 @@ export default function Login({ toggleDisplay }: LoginProps) {
         case 200:
           alert("Succesfull");
           break; // TO-DO: Change this
+        case 404:
+          setError("Failed to connect to server");
+          break;
         default:
-          console.log(response.status);
+          setError("Some error occurred! Refer to console");
+          console.log(response);
       }
     } catch (e) {
+      setError("Some error occurred! Refer to console.")
       console.error(e);
     }
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col justify-center items-center">
-      {error && <div>{error}</div>}
+    <div className="h-screen w-screen flex flex-col justify-center items-center max-w-md">
+      <div className="bg-red-100 text-red-600 text-xl mb-2 min-w-full flex justify-center">{error}</div>
       <form
         className="flex flex-col items-stretch gap-5"
         onSubmit={handleSubmit}
