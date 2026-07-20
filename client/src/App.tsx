@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Login from "./Login";
 import Register from "./Register";
-import Navbar from "./NavBar";
+import Navbar from "./Navbar";
 
 export default function App() {
   const [isLoginDisplayed, setIsLoginDisplayed] = useState(true);
@@ -12,7 +12,7 @@ export default function App() {
 
   return <>
   <Navbar/>
-  <section className="flex justify-center">
+  <section className="flex justify-center -mt-10">
     {isLoginDisplayed ? (
     <Login toggleDisplay={toggleDisplay} />
   ) : (
