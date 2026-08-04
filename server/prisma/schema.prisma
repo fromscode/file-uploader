@@ -55,10 +55,10 @@ model File {
 }
 
 model Session {
-  id        String   @id
-  sid       String   @unique
-  userId    Int      @unique
-  expiresAt DateTime
+  id        Int    @id @default(autoincrement())
+  sid       String @unique
+  userId    Int    @unique
+  expiresAt BigInt
 
   @@map("sessions")
 }

@@ -9,7 +9,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import passport from "passport";
 
-import "./config/passport.js";
+// import "./config/passport.js";
 
 const app = express();
 

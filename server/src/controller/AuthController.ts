@@ -6,7 +6,8 @@ import { prisma } from "../config/db/prisma.js";
 import validators from "../middlewares/validators.js";
 import { matchedData, validationResult } from "express-validator";
 import BadRequest400 from "../errors/BadRequest400.js";
-import passport, { use } from "passport";
+
+const MILLISECONDS24HOURS = 24 * 60 * 60 * 1000;
 
 const getLanding = [
   async (req: Request, res: Response, next: NextFunction) => {
@@ -16,13 +17,49 @@ const getLanding = [
 
 const login = [
   validators.validateUsername,
-  (req: Request, res: Response, next: NextFunction) => {
+  validators.validatePassword,
+  async (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
     if (!result.isEmpty()) next(new BadRequest400(result.array()));
-    else next();
-  },
-  passport.authenticate("local"),
-  (req: Request, res: Response, next: NextFunction) => {
+
+    const { username, password } = matchedData(req);
+
+    const existingUser = await prisma.user.findFirst({
+      where: { OR: [{ username }, { email: username }] },
+    });
+
+    if (
+      !existingUser ||
+      !(await bcrypt.compare(password, existingUser.password))
+    )
+      return res.sendStatus(401);
+
+    const sid =
+      crypto.randomUUID().slice(0, 10) +
+      existingUser!.username +
+      crypto.randomUUID().slice(11, 20);
+
+    await prisma.session.deleteMany({
+      where: {
+        userId: existingUser!.id,
+      },
+    });
+
+    const session = await prisma.session.create({
+      data: {
+        sid,
+        userId: existingUser!.id,
+        expiresAt: Date.now() + MILLISECONDS24HOURS,
+      },
+    });
+
+    res.cookie("sid", session.sid, {
+      maxAge: MILLISECONDS24HOURS,
+      httpOnly: true,
+      sameSite: true,
+      secure: true,
+    });
+
     res.sendStatus(200);
   },
 ];
@@ -74,26 +111,41 @@ const register = [
       },
     });
 
-    req.login(user, (err) => {
-      if (err) return next(err);
+    const sid =
+      crypto.randomUUID().slice(0, 10) +
+      user!.username +
+      crypto.randomUUID().slice(11, 20);
 
-      return res.sendStatus(201);
+    const session = await prisma.session.create({
+      data: {
+        sid,
+        userId: user!.id,
+        expiresAt: Date.now() + MILLISECONDS24HOURS,
+      },
     });
+
+    res.cookie("sid", session.sid, {
+      maxAge: MILLISECONDS24HOURS,
+      httpOnly: true,
+      sameSite: true,
+      secure: true,
+    });
+
+    res.sendStatus(201);
   },
 ];
 
 const logout = [
-  (req: Request, res: Response, next: NextFunction) => {
-    req.logout((err) => {
-      if (err) return next(err);
+  async (req: Request, res: Response, next: NextFunction) => {
+    const sid = req.sessionID;
 
-      req.session.destroy((err) => {
-        if (err) return next(err);
-
-        res.clearCookie("connect.sid");
-        res.sendStatus(200);
-      });
+    await prisma.session.delete({
+      where: {
+        sid,
+      },
     });
+
+    res.sendStatus(200);
   },
 ];
 
