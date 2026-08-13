@@ -1,5 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../config/db/prisma";
+import { UserModel } from "../generated/prisma/models";
+
+declare global {
+  namespace Express {
+    interface Request {
+      sessionID?: string;
+      user?: UserModel;
+    }
+  }
+}
 
 export default async function (
   req: Request,

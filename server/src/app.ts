@@ -3,11 +3,11 @@ import cors from "cors";
 
 import router from "./routes/index.js";
 
-import session from "./config/session.js";
+// import session from "./config/session.js";
 
 import errorHandler from "./middlewares/errorHandler.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
-import passport from "passport";
+// import passport from "passport";
 
 // import "./config/passport.js";
 
@@ -16,9 +16,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(session);
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(session);
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use(router);
 
