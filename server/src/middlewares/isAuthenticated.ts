@@ -8,7 +8,7 @@ export default async function (
 ) {
   const cookies = req.headers.cookie?.split(";");
 
-  if (!cookies) return res.sendStatus(401);
+  if (!cookies || !cookies.length) return res.sendStatus(401);
 
   let sid = "";
 
