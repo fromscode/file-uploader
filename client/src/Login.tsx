@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface LoginProps {
   toggleDisplay: () => void;
@@ -7,6 +8,8 @@ interface LoginProps {
 export default function Login({ toggleDisplay }: LoginProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState("");
 
@@ -49,20 +52,18 @@ export default function Login({ toggleDisplay }: LoginProps) {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col justify-center items-center max-w-md">
-      <div className="bg-red-100 text-red-600 text-xl mb-2 min-w-full flex justify-center">
-        {error}
-      </div>
+    <div className="w-screen flex flex-col justify-center items-center max-w-md">
+      <div className="mb-2 min-w-full flex justify-center">{error}</div>
       <form
         className="flex flex-col items-stretch gap-5"
         onSubmit={handleSubmit}
       >
         <div className="flex-1 flex flex-col">
-          <label className="text-xl" htmlFor="username">
-            Username or Email:{" "}
+          <label className="text-lg" htmlFor="username">
+            Username or Email
           </label>
           <input
-            className="border rounded-sm text-2xl pr-5 pl-1 py-2 min-w-md"
+            className="border rounded-sm text-lg pr-5 pl-2 py-2 min-w-md"
             type="text"
             id="username"
             value={username}
@@ -70,22 +71,33 @@ export default function Login({ toggleDisplay }: LoginProps) {
           />
         </div>
         <div className="flex-1 flex flex-col">
-          <label htmlFor="password" className="text-xl">
-            Password:{" "}
+          <label htmlFor="password" className="text-lg">
+            Password
           </label>
-          <input
-            className="border rounded-sm text-2xl pr-5 pl-1 py-2 min-w-md"
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="flex relative">
+            <input
+              id="password"
+              className="border rounded-sm text-lg pr-5 pl-2 py-2 min-w-md"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {password && (
+              <button type="button" onClick={() => setShowPassword((p) => !p)}>
+                {!showPassword ? (
+                  <FiEye className="absolute right-2 text-xl top-3.5" />
+                ) : (
+                  <FiEyeOff className="absolute right-2 text-xl top-3.5" />
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col items-center">
           <button
             type="submit"
-            className="text-2xl flex items-center justify-center px-7 py-3 rounded-xl bg-cyan-800 text-white cursor-pointer hover:bg-cyan-700"
+            className="text-lg flex items-center justify-center px-7 py-3 rounded-full bg-blue-800 text-zinc-300 cursor-pointer hover:bg-blue-700"
           >
             Login
           </button>
@@ -93,7 +105,7 @@ export default function Login({ toggleDisplay }: LoginProps) {
       </form>
 
       <p
-        className="mt-5 underline cursor-pointer hover:no-underline underline-offset-1"
+        className="mt-5 underline cursor-pointer hover:no-underline underline-offset-2 decoration-0"
         onClick={toggleDisplay}
       >
         Don't have an account? Register for free
