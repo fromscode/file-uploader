@@ -43,14 +43,16 @@ export default function Login({ toggleDisplay }: LoginProps) {
           console.log(response);
       }
     } catch (e) {
-      setError("Some error occurred! Refer to console.")
+      setError("Some error occurred! Refer to console.");
       console.error(e);
     }
   }
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center max-w-md">
-      <div className="bg-red-100 text-red-600 text-xl mb-2 min-w-full flex justify-center">{error}</div>
+      <div className="bg-red-100 text-red-600 text-xl mb-2 min-w-full flex justify-center">
+        {error}
+      </div>
       <form
         className="flex flex-col items-stretch gap-5"
         onSubmit={handleSubmit}

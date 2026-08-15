@@ -10,15 +10,16 @@ export default function App() {
     setIsLoginDisplayed((p) => !p);
   }
 
-  return <>
-  <Navbar/>
-  <section className="flex justify-center -mt-10">
-    {isLoginDisplayed ? (
-    <Login toggleDisplay={toggleDisplay} />
-  ) : (
-    <Register toggleDisplay={toggleDisplay} />
-  )}
-  </section>
-  
-  </>
+  return (
+    <>
+      <Navbar />
+      <section className="flex justify-center -mt-10">
+        {isLoginDisplayed ? (
+          <Login toggleDisplay={toggleDisplay} />
+        ) : (
+          <Register toggleDisplay={toggleDisplay} />
+        )}
+      </section>
+    </>
+  );
 }

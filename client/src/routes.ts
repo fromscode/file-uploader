@@ -4,18 +4,18 @@ import Error from "./Error";
 import Dashboard from "./Dashboard";
 
 const routes: RouteObject[] = [
-    {
-        path: "/",
-        Component: Dashboard
-    },
-    {
-        path: '/begin',
-        Component: App
-    },
-    {
-        path: '/*',
-        Component: Error
-    }
-]
+  {
+    path: "/",
+    Component: Dashboard,
+  },
+  {
+    path: "/begin",
+    Component: App,
+  },
+  {
+    path: "/*",
+    Component: Error,
+  },
+];
 
 export default routes;

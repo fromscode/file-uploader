@@ -30,10 +30,13 @@ export default function Register({ toggleDisplay }: RegisterProps) {
         case 400:
           setError((await response.json()).errors[0]);
           break;
-        case 409:
-          const field = ((await response.json()).fields[0] as string);
-          setError(field.slice(0, 1).toUpperCase + field.slice(1) + " already exists!");
+        case 409: {
+          const field = (await response.json()).fields[0] as string;
+          setError(
+            field.slice(0, 1).toUpperCase + field.slice(1) + " already exists!",
+          );
           break;
+        }
         case 200:
           alert("Succesfull");
           break; // TO-DO: Change this
@@ -45,15 +48,20 @@ export default function Register({ toggleDisplay }: RegisterProps) {
           console.log(response);
       }
     } catch (e) {
-      setError("Some error occurred! Refer to console.")
+      setError("Some error occurred! Refer to console.");
       console.error(e);
     }
   }
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center max-w-md">
-      <div className="bg-red-100 text-red-600 text-xl mb-2 min-w-full flex justify-center">{error}</div>
-      <form className="flex flex-col items-stretch gap-5 min-w-md" onSubmit={handleSubmit}>
+      <div className="bg-red-100 text-red-600 text-xl mb-2 min-w-full flex justify-center">
+        {error}
+      </div>
+      <form
+        className="flex flex-col items-stretch gap-5 min-w-md"
+        onSubmit={handleSubmit}
+      >
         <div className="flex-1 flex flex-col">
           <label className="text-xl" htmlFor="username">
             Username:{" "}
