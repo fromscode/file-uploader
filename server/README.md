@@ -12,7 +12,14 @@
         2. 409 Conflict (if username or email already exists)
         3. 201 Created (otherwise if successfull registration)
 - PUT /edit -> edit profile details
-- GET /home -> The base directory
+- GET /home 
+    returns:
+        1. 401: Unauthenticated request
+        2. 200: {
+            currentFolder:,
+            folders:
+            files,
+        }
 - POST /create -> create folder
 - PUT /update -> update folder name
 - DELETE /delete -> Delete folder (cascade delete all its contents as well)

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useNavigate } from "react-router";
 
 interface LoginProps {
   toggleDisplay: () => void;
@@ -13,6 +14,8 @@ export default function Login({ toggleDisplay }: LoginProps) {
 
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
   const backenduri = import.meta.env.VITE_backend_uri;
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -23,6 +26,7 @@ export default function Login({ toggleDisplay }: LoginProps) {
         body: JSON.stringify({ username, password }),
         method: "POST",
         mode: "cors",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -36,7 +40,7 @@ export default function Login({ toggleDisplay }: LoginProps) {
           setError("Invalid Username or Password");
           break;
         case 200:
-          alert("Succesfull");
+          navigate("/");
           break; // TO-DO: Change this
         case 404:
           setError("Failed to connect to server");

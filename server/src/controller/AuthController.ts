@@ -56,8 +56,7 @@ const login = [
     res.cookie("sid", session.sid, {
       maxAge: MILLISECONDS24HOURS,
       httpOnly: true,
-      sameSite: true,
-      secure: true,
+      sameSite: "lax",
     });
 
     res.sendStatus(200);
