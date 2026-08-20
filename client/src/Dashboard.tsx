@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { CiFolderOn } from "react-icons/ci";
+import { AiOutlineFileAdd } from "react-icons/ai";
+import { LuFolderPlus } from "react-icons/lu";
 
 import Navbar from "./Navbar";
 
@@ -13,6 +15,23 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
+
+  const addFileRef = useRef(null);
+  const addFolderRef = useRef(null);
+
+  /* 
+  TO-DO: Add links to each folder, file and the add buttons
+  */
+
+  function handleMouseEnter() {
+    addFileRef.current.classList.remove("hidden");
+    addFolderRef.current.classList.remove("hidden");
+  }
+
+  function handleMouseLeave() {
+    addFileRef.current.classList.add("hidden");
+    addFolderRef.current.classList.add("hidden");
+  }
 
   useEffect(() => {
     async function getData() {
@@ -85,6 +104,25 @@ export default function Dashboard() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div
+          className="absolute bottom-20 right-10 text-2xl flex flex-col gap-4"
+          onMouseEnter={() => handleMouseEnter()}
+          onMouseLeave={() => handleMouseLeave()}
+        >
+          <div className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50">
+            <AiOutlineFileAdd />
+            <div className="hidden text-base" ref={addFileRef}>
+              Add File
+            </div>
+          </div>
+          <div className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50 ">
+            <LuFolderPlus />
+            <div className="hidden text-base" ref={addFolderRef}>
+              Add Folder
+            </div>
+          </div>
         </div>
       </section>
     </>
