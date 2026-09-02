@@ -5,6 +5,7 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { LuFolderPlus } from "react-icons/lu";
 
 import Navbar from "./Navbar";
+import type { File, Folder } from "./types";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -13,24 +14,24 @@ export default function Dashboard() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [folders, setFolders] = useState([]);
-  const [files, setFiles] = useState([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
-  const addFileRef = useRef(null);
-  const addFolderRef = useRef(null);
+  const addFileRef = useRef<HTMLDivElement>(null);
+  const addFolderRef = useRef<HTMLDivElement>(null);
 
   /* 
   TO-DO: Add links to each folder, file and the add buttons
   */
 
   function handleMouseEnter() {
-    addFileRef.current.classList.remove("hidden");
-    addFolderRef.current.classList.remove("hidden");
+    addFileRef.current!.classList.remove("hidden");
+    addFolderRef.current!.classList.remove("hidden");
   }
 
   function handleMouseLeave() {
-    addFileRef.current.classList.add("hidden");
-    addFolderRef.current.classList.add("hidden");
+    addFileRef.current!.classList.add("hidden");
+    addFolderRef.current!.classList.add("hidden");
   }
 
   useEffect(() => {
