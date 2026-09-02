@@ -17,6 +17,9 @@ export default function Dashboard() {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<File[]>([]);
 
+  const [addFileModalDisplayed, setAddFileModalDisplayed] = useState(false);
+  const [addFolderModalDisplayed, setAddFolderModalDisplayed] = useState(false);
+
   const addFileRef = useRef<HTMLDivElement>(null);
   const addFolderRef = useRef<HTMLDivElement>(null);
 
@@ -112,13 +115,19 @@ export default function Dashboard() {
           onMouseEnter={() => handleMouseEnter()}
           onMouseLeave={() => handleMouseLeave()}
         >
-          <div className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50">
+          <div
+            className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50"
+            onClick={() => setAddFileModalDisplayed(true)}
+          >
             <AiOutlineFileAdd />
             <div className="hidden text-base" ref={addFileRef}>
               Add File
             </div>
           </div>
-          <div className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50 ">
+          <div
+            className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50 "
+            onClick={() => setAddFolderModalDisplayed(true)}
+          >
             <LuFolderPlus />
             <div className="hidden text-base" ref={addFolderRef}>
               Add Folder
@@ -126,6 +135,81 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      {addFileModalDisplayed && (
+        <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
+          <button
+            className="absolute top-5 right-5 bg-zinc-900 rounded-full px-3 py-1 text-xl hover:opacity-80 cursor-pointer"
+            onClick={() => setAddFileModalDisplayed(false)}
+          >
+            X
+          </button>
+          <div className="bg-zinc-900 border border-zinc-400 p-3">
+            <h3 className="text-xl mb-10 text-center">Add File</h3>
+            <form className="text-base">
+              <div className="flex flex-col mb-5">
+                <label htmlFor="name">Name</label>
+                <input
+                  className="border border-zinc-400 min-w-sm px-2 py-1 text-zinc-400"
+                  type="text"
+                  name="name"
+                  id="name"
+                />
+              </div>
+              <div className="flex flex-col mb-5">
+                <label htmlFor="url">Url</label>
+                <input
+                  className="border border-zinc-400 min-w-sm px-2 py-1 text-zinc-400"
+                  type="url"
+                  name="url"
+                  id="url"
+                />
+              </div>
+              <div className="flex flex-col mb-5 items-center justify-center mt-10">
+                <button
+                  type="submit"
+                  className="bg-blue-800 text-white cursor-pointer px-5 py-2 rounded-full text-lg hover:bg-blue-700"
+                >
+                  Add File
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      )}
+
+      {addFolderModalDisplayed && (
+        <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
+          <button
+            className="absolute top-5 right-5 bg-zinc-900 rounded-full px-3 py-1 text-xl hover:opacity-80 cursor-pointer"
+            onClick={() => setAddFolderModalDisplayed(false)}
+          >
+            X
+          </button>
+          <div className="bg-zinc-900 border border-zinc-400 p-3">
+            <h3 className="text-xl mb-10 text-center">Add Folder</h3>
+            <form className="text-base">
+              <div className="flex flex-col mb-5">
+                <label htmlFor="name">Name</label>
+                <input
+                  className="border border-zinc-400 min-w-sm px-2 py-1 text-zinc-400"
+                  type="text"
+                  name="name"
+                  id="name"
+                />
+              </div>
+              <div className="flex flex-col mb-5 items-center justify-center mt-10">
+                <button
+                  type="submit"
+                  className="bg-blue-800 text-white cursor-pointer px-5 py-2 rounded-full text-lg hover:bg-blue-700"
+                >
+                  Add Folder
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      )}
     </>
   );
 }
