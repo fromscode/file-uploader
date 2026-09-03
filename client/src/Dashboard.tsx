@@ -28,8 +28,11 @@ export default function Dashboard() {
   const addFileRef = useRef<HTMLDivElement>(null);
   const addFolderRef = useRef<HTMLDivElement>(null);
 
+  const folderNameInputRef = useRef<HTMLInputElement>(null);
+  const fileNameInputRef = useRef<HTMLInputElement>(null);
+
   /* 
-  TO-DO: Add links to each folder, file and the add buttons
+  TO-DO: Add links to each folders
   */
 
   async function handleAddFile(e: React.SubmitEvent<HTMLFormElement>) {
@@ -66,6 +69,32 @@ export default function Dashboard() {
 
   async function handleAddFolder(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    try {
+      const response = await fetch(backend + "create", {
+        mode: "cors",
+        credentials: "include",
+        body: JSON.stringify({
+          parentId: currentFolder!.id,
+          folderName,
+        }),
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+
+      switch (response.status) {
+        case 201: {
+          navigate(0);
+          break;
+        }
+        default: {
+          console.error(await response.json());
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function handleMouseEnter() {
@@ -155,7 +184,10 @@ export default function Dashboard() {
           </div>
           <div>
             {files.map((file) => (
-              <div className="flex items-center gap-2 mb-4 pb-1 border-b border-zinc-600 ">
+              <div
+                className="flex items-center gap-2 mb-4 pb-1 border-b border-zinc-600 "
+                key={file.id}
+              >
                 <CiFileOn className="text-xl" />
                 <a
                   className="hover:cursor-pointer font-light hover:font-medium"
@@ -177,7 +209,12 @@ export default function Dashboard() {
         >
           <div
             className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50"
-            onClick={() => setAddFileModalDisplayed(true)}
+            onClick={() => {
+              setAddFileModalDisplayed(true);
+              setTimeout(() => {
+                fileNameInputRef.current!.focus();
+              }, 0);
+            }}
           >
             <AiOutlineFileAdd />
             <div className="hidden text-base" ref={addFileRef}>
@@ -186,7 +223,12 @@ export default function Dashboard() {
           </div>
           <div
             className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50 "
-            onClick={() => setAddFolderModalDisplayed(true)}
+            onClick={() => {
+              setAddFolderModalDisplayed(true);
+              setTimeout(() => {
+                folderNameInputRef.current!.focus();
+              }, 0);
+            }}
           >
             <LuFolderPlus />
             <div className="hidden text-base" ref={addFolderRef}>
@@ -216,6 +258,8 @@ export default function Dashboard() {
                   id="name"
                   value={fileName}
                   onChange={(e) => setFileName(e.target.value)}
+                  ref={fileNameInputRef}
+                  required
                 />
               </div>
               <div className="flex flex-col mb-5">
@@ -227,6 +271,7 @@ export default function Dashboard() {
                   id="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
+                  required
                 />
               </div>
               <div className="flex flex-col mb-5 items-center justify-center mt-10">
@@ -262,6 +307,8 @@ export default function Dashboard() {
                   id="name"
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
+                  ref={folderNameInputRef}
+                  required
                 />
               </div>
               <div className="flex flex-col mb-5 items-center justify-center mt-10">
