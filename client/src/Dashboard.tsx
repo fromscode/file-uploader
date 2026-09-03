@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { CiFolderOn } from "react-icons/ci";
+import { CiFileOn, CiFolderOn } from "react-icons/ci";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { LuFolderPlus } from "react-icons/lu";
 
@@ -14,11 +14,16 @@ export default function Dashboard() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentFolder, setCurrentFolder] = useState<Folder>();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<File[]>([]);
 
   const [addFileModalDisplayed, setAddFileModalDisplayed] = useState(false);
   const [addFolderModalDisplayed, setAddFolderModalDisplayed] = useState(false);
+
+  const [fileName, setFileName] = useState("");
+  const [url, setUrl] = useState("");
+  const [folderName, setFolderName] = useState("");
 
   const addFileRef = useRef<HTMLDivElement>(null);
   const addFolderRef = useRef<HTMLDivElement>(null);
@@ -26,6 +31,42 @@ export default function Dashboard() {
   /* 
   TO-DO: Add links to each folder, file and the add buttons
   */
+
+  async function handleAddFile(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    try {
+      const response = await fetch(backend + "upload", {
+        mode: "cors",
+        credentials: "include",
+        body: JSON.stringify({
+          name: fileName,
+          url: url,
+          folderId: currentFolder!.id,
+        }),
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+
+      switch (response.status) {
+        case 400:
+        case 403: {
+          console.error(await response.json());
+          break;
+        }
+        case 201: {
+          navigate(0);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function handleAddFolder(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
 
   function handleMouseEnter() {
     addFileRef.current!.classList.remove("hidden");
@@ -52,6 +93,7 @@ export default function Dashboard() {
           case 200: {
             setLoading(false);
             const jsonResponse = await response.json();
+            setCurrentFolder(jsonResponse.currentFolder);
             setFolders(jsonResponse.folders);
             setFiles(jsonResponse.files);
             break;
@@ -98,22 +140,34 @@ export default function Dashboard() {
       <section className="flex flex-col mx-auto w-xl text-zinc-400 text-lg">
         <div className="bg-zinc-900 w-full px-6 py-1 mb-5">Name</div>
         <div>
-          {folders.map((folder) => (
-            <div className="flex items-center gap-2 mb-4 pb-1 border-b border-zinc-600 ">
-              <CiFolderOn className="text-xl" />
-              <div className="hover:cursor-pointer font-light hover:font-medium">
-                {folder.name}
+          <div className="mb-10">
+            {folders.map((folder) => (
+              <div
+                className="flex items-center gap-2 mb-4 pb-1 border-b border-zinc-600 "
+                key={folder.id}
+              >
+                <CiFolderOn className="text-xl" />
+                <div className="hover:cursor-pointer font-light hover:font-medium">
+                  {folder.name}
+                </div>
               </div>
-            </div>
-          ))}
-          {files.map((file) => (
-            <div className="flex items-center gap-2 mb-4 pb-1 border-b border-zinc-600 ">
-              <CiFolderOn className="text-xl" />
-              <div className="hover:cursor-pointer font-light hover:font-medium">
-                {file.name}
+            ))}
+          </div>
+          <div>
+            {files.map((file) => (
+              <div className="flex items-center gap-2 mb-4 pb-1 border-b border-zinc-600 ">
+                <CiFileOn className="text-xl" />
+                <a
+                  className="hover:cursor-pointer font-light hover:font-medium"
+                  href={file.url}
+                  target="_blank"
+                  rel="noopener noreferer"
+                >
+                  {file.name}
+                </a>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div
@@ -152,7 +206,7 @@ export default function Dashboard() {
           </button>
           <div className="bg-zinc-900 border border-zinc-400 p-3">
             <h3 className="text-xl mb-10 text-center">Add File</h3>
-            <form className="text-base">
+            <form className="text-base" onSubmit={(e) => handleAddFile(e)}>
               <div className="flex flex-col mb-5">
                 <label htmlFor="name">Name</label>
                 <input
@@ -160,6 +214,8 @@ export default function Dashboard() {
                   type="text"
                   name="name"
                   id="name"
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
                 />
               </div>
               <div className="flex flex-col mb-5">
@@ -169,6 +225,8 @@ export default function Dashboard() {
                   type="url"
                   name="url"
                   id="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
                 />
               </div>
               <div className="flex flex-col mb-5 items-center justify-center mt-10">
@@ -194,7 +252,7 @@ export default function Dashboard() {
           </button>
           <div className="bg-zinc-900 border border-zinc-400 p-3">
             <h3 className="text-xl mb-10 text-center">Add Folder</h3>
-            <form className="text-base">
+            <form className="text-base" onSubmit={handleAddFolder}>
               <div className="flex flex-col mb-5">
                 <label htmlFor="name">Name</label>
                 <input
@@ -202,6 +260,8 @@ export default function Dashboard() {
                   type="text"
                   name="name"
                   id="name"
+                  value={folderName}
+                  onChange={(e) => setFolderName(e.target.value)}
                 />
               </div>
               <div className="flex flex-col mb-5 items-center justify-center mt-10">

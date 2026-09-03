@@ -29,7 +29,7 @@ const upload = [
           error: "Folder not found",
         });
 
-      if (folder.parentId !== req.user!.id) return res.sendStatus(403);
+      if (folder.userId !== req.user!.id) return res.sendStatus(403);
 
       await prisma.file.create({
         data: {
