@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { CiFileOn, CiFolderOn } from "react-icons/ci";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { LuFolderPlus } from "react-icons/lu";
+import { MdDeleteOutline } from "react-icons/md";
 
 import Navbar from "./Navbar";
 import type { File, Folder } from "./types";
@@ -20,6 +21,12 @@ export default function Dashboard() {
 
   const [addFileModalDisplayed, setAddFileModalDisplayed] = useState(false);
   const [addFolderModalDisplayed, setAddFolderModalDisplayed] = useState(false);
+
+  const [
+    deleteConfirmationModalDisplayed,
+    setDeleteConfirmationModalDisplayed,
+  ] = useState(false);
+  const [itemToBeDeleted, setItemToBeDeleted] = useState<File | Folder>();
 
   const [fileName, setFileName] = useState("");
   const [url, setUrl] = useState("");
@@ -107,6 +114,30 @@ export default function Dashboard() {
     addFolderRef.current!.classList.add("hidden");
   }
 
+  async function handleDelete() {
+    const url =
+      backend +
+      (Object.hasOwn(itemToBeDeleted!, "url") ? `file` : `folder`) +
+      `/${itemToBeDeleted!.id}`;
+    try {
+      const response = await fetch(url, {
+        mode: "cors",
+        credentials: "include",
+        method: "DELETE",
+      });
+
+      switch (response.status) {
+        case 204:
+          navigate(0);
+          break;
+        default:
+          console.error(await response.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   useEffect(() => {
     async function getData() {
       try {
@@ -179,6 +210,13 @@ export default function Dashboard() {
                 <div className="hover:cursor-pointer font-light hover:font-medium">
                   {folder.name}
                 </div>
+                <MdDeleteOutline
+                  className="text-red-500 hover:text-red-700 ml-auto cursor-pointer"
+                  onClick={() => {
+                    setDeleteConfirmationModalDisplayed(true);
+                    setItemToBeDeleted(folder);
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -197,6 +235,13 @@ export default function Dashboard() {
                 >
                   {file.name}
                 </a>
+                <MdDeleteOutline
+                  className="text-red-500 hover:text-red-700 ml-auto cursor-pointer"
+                  onClick={() => {
+                    setDeleteConfirmationModalDisplayed(true);
+                    setItemToBeDeleted(file);
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -237,6 +282,36 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      {deleteConfirmationModalDisplayed && (
+        <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
+          <button
+            className="absolute top-5 right-5 bg-zinc-900 rounded-full px-3 py-1 text-xl hover:opacity-80 cursor-pointer"
+            onClick={() => setDeleteConfirmationModalDisplayed(false)}
+          >
+            X
+          </button>
+          <div className="bg-zinc-900 border border-zinc-400 p-3">
+            <h3 className="text-xl mb-10 text-center">
+              Delete {itemToBeDeleted!.name} ?
+            </h3>
+            <div className="flex">
+              <button
+                className="bg-red-700 rounded-full cursor-pointer flex items-center justify-center px-4 py-1 hover:opacity-80 mr-auto"
+                onClick={() => handleDelete()}
+              >
+                Delete
+              </button>
+              <button
+                className="bg-zinc-800 rounded-full cursor-pointer flex items-center justify-center px-4 py-1 hover:opacity-80"
+                onClick={() => setDeleteConfirmationModalDisplayed(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {addFileModalDisplayed && (
         <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">

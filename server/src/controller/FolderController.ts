@@ -167,7 +167,7 @@ const deleteFolder = [
         },
       });
 
-      res.sendStatus(200);
+      res.sendStatus(204);
     } catch (err) {
       return next(err);
     }
