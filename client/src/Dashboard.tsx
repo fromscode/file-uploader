@@ -39,27 +39,33 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function getData() {
-      const response = await fetch(backend + "home", {
-        mode: "cors",
-        credentials: "include",
-      });
+      try {
+        const response = await fetch(backend + "home", {
+          mode: "cors",
+          credentials: "include",
+        });
 
-      switch (response.status) {
-        case 401:
-          navigate("/begin");
-          break;
-        case 200: {
-          setLoading(false);
-          const jsonResponse = await response.json();
-          setFolders(jsonResponse.folders);
-          setFiles(jsonResponse.files);
-          break;
+        switch (response.status) {
+          case 401:
+            navigate("/begin");
+            break;
+          case 200: {
+            setLoading(false);
+            const jsonResponse = await response.json();
+            setFolders(jsonResponse.folders);
+            setFiles(jsonResponse.files);
+            break;
+          }
+          default:
+            setLoading(false);
+            setError(response.status + " error!");
+            console.error(response.status);
+            break;
         }
-        default:
-          setLoading(false);
-          setError(response.status + " error!");
-          console.error(response.status);
-          break;
+      } catch (e) {
+        console.error(e);
+        setLoading(false);
+        setError("Connection error");
       }
     }
 
