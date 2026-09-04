@@ -144,6 +144,12 @@ const logout = [
       },
     });
 
+    res.cookie("sid", req.sessionID, {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: "lax",
+    });
+
     res.sendStatus(200);
   },
 ];

@@ -11,6 +11,10 @@
         1. 400 Bad Request (validation error)
         2. 409 Conflict (if username or email already exists)
         3. 201 Created (otherwise if successfull registration)
+- GET /logout 
+    returns:
+        1. 401 if unauthenticated or cookie is corrupted
+        2. 200 if logout is successfull (it will clear the cookie from the frontend as well)
 - PUT /edit -> edit profile details
 - GET /home 
     returns:

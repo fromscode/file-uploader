@@ -4,6 +4,7 @@ import { CiFileOn, CiFolderOn } from "react-icons/ci";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { LuFolderPlus } from "react-icons/lu";
 import { MdDeleteOutline } from "react-icons/md";
+import { AiOutlineLogout } from "react-icons/ai";
 
 import Navbar from "./Navbar";
 import type { File, Folder } from "./types";
@@ -34,6 +35,7 @@ export default function Dashboard() {
 
   const addFileRef = useRef<HTMLDivElement>(null);
   const addFolderRef = useRef<HTMLDivElement>(null);
+  const logoutRef = useRef<HTMLDivElement>(null);
 
   const folderNameInputRef = useRef<HTMLInputElement>(null);
   const fileNameInputRef = useRef<HTMLInputElement>(null);
@@ -41,6 +43,25 @@ export default function Dashboard() {
   /* 
   TO-DO: Add links to each folders
   */
+
+  async function handleLogoutClick() {
+    try {
+      const response = await fetch(backend + "logout", {
+        mode: "cors",
+        credentials: "include",
+      });
+
+      switch (response.status) {
+        case 200:
+          navigate("/begin");
+          break;
+        default:
+          console.error(await response.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   async function handleAddFile(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -279,6 +300,22 @@ export default function Dashboard() {
             <div className="hidden text-base" ref={addFolderRef}>
               Add Folder
             </div>
+          </div>
+        </div>
+        <div
+          className="absolute bottom-20 left-10 bg-zinc-800 p-3 rounded-full
+        cursor-pointer flex gap-2 items-center justify-center hover:bg-zinc-500 hover:text-black"
+          onClick={handleLogoutClick}
+          onMouseEnter={() => {
+            logoutRef.current!.classList.remove("hidden");
+          }}
+          onMouseLeave={() => {
+            logoutRef.current!.classList.add("hidden");
+          }}
+        >
+          <AiOutlineLogout className="font-bold text-xl" />
+          <div className="hidden text-base" ref={logoutRef}>
+            Logout
           </div>
         </div>
       </section>
