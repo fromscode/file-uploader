@@ -330,9 +330,9 @@ export default function Dashboard() {
           </button>
           <div className="bg-zinc-900 border border-zinc-400 p-3">
             <h3 className="text-xl mb-10 text-center">
-              Delete {itemToBeDeleted!.name} ?
+              Delete {itemToBeDeleted!.name}?
             </h3>
-            <div className="flex">
+            <div className="flex gap-2">
               <button
                 className="bg-red-700 rounded-full cursor-pointer flex items-center justify-center px-4 py-1 hover:opacity-80 mr-auto"
                 onClick={() => handleDelete()}
