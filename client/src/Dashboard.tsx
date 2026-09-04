@@ -5,6 +5,7 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { LuFolderPlus } from "react-icons/lu";
 import { MdDeleteOutline } from "react-icons/md";
 import { AiOutlineLogout } from "react-icons/ai";
+import { IoMdArrowBack } from "react-icons/io";
 
 import Navbar from "./Navbar";
 import type { File, Folder } from "./types";
@@ -50,7 +51,7 @@ export default function Dashboard() {
         />
 
         <div
-          className="absolute bottom-20 left-10 bg-zinc-800 p-3 rounded-full
+          className="fixed bottom-10 left-10 bg-zinc-800 p-3 rounded-full
         cursor-pointer flex gap-2 items-center justify-center hover:bg-zinc-500 hover:text-black"
           onClick={handleLogoutClick}
           onMouseEnter={() => {
@@ -260,7 +261,7 @@ function CurrentFolderContents({
   if (error) return <div>{error}</div>;
 
   return (
-    <>
+    <div className="relative">
       <div>
         <div className="mb-10">
           {folders.map((folder) => (
@@ -313,7 +314,7 @@ function CurrentFolderContents({
       </div>
 
       <div
-        className="absolute bottom-20 right-10 text-2xl flex flex-col gap-4"
+        className="fixed bottom-10 right-10 text-2xl flex flex-col gap-4"
         onMouseEnter={() => handleMouseEnter()}
         onMouseLeave={() => handleMouseLeave()}
       >
@@ -346,6 +347,16 @@ function CurrentFolderContents({
           </div>
         </div>
       </div>
+
+      {!!(currentFolder?.parentId) && (<div
+        className="absolute top-0 -left-10 hover:bg-zinc-700 rounded-full p-1"
+        onClick={() => {
+          setCurrentFolderId(currentFolder!.parentId!);
+        }}
+      >
+        <IoMdArrowBack className="text-xl cursor-pointer" />
+      </div>)}
+
       {deleteConfirmationModalDisplayed && (
         <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
           <button
@@ -461,6 +472,6 @@ function CurrentFolderContents({
           </div>
         </section>
       )}
-    </>
+    </div>
   );
 }
