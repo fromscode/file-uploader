@@ -106,6 +106,8 @@ function CurrentFolderContents({
   const folderNameInputRef = useRef<HTMLInputElement>(null);
   const fileNameInputRef = useRef<HTMLInputElement>(null);
 
+  const folderNavigationPane = useRef<HTMLDivElement>(null);
+
   const [
     deleteConfirmationModalDisplayed,
     setDeleteConfirmationModalDisplayed,
@@ -252,6 +254,12 @@ function CurrentFolderContents({
       setLoading(false);
       setError("Connection error");
     }
+
+    setTimeout(() => {
+      folderNavigationPane.current!.scrollBy({
+        left: folderNavigationPane.current!.scrollWidth,
+      });
+    }, 0);
   }, [backend, currentFolderId, navigate]);
 
   useEffect(() => {
@@ -264,10 +272,12 @@ function CurrentFolderContents({
 
   return (
     <div className="">
-      <div className="bg-zinc-900 w-full px-7 py-1 mb-5 text-base flex">
+      <div
+        className="bg-zinc-900 w-full px-7 py-1 mb-5 text-base flex overflow-x-auto gap-1 scrollbar-thumb-zinc-700"
+        ref={folderNavigationPane}
+      >
         {parentList.map((parent) => (
-          <div>
-            &nbsp;
+          <div className="flex gap-1" key={parent.id}>
             <span
               className="underline underline-offset-2 cursor-pointer hover:no-underline"
               onClick={() => {
@@ -276,12 +286,11 @@ function CurrentFolderContents({
             >
               {parent.name}
             </span>
-            {" / "}
+            <span>/</span>
           </div>
         ))}
         <div>
-          &nbsp;
-          <span className="">{currentFolder?.name}</span>
+          <span>{currentFolder?.name}</span>
         </div>
       </div>
       <div className="bg-zinc-900 w-full py-1 mb-5 flex items-center">
