@@ -3,6 +3,7 @@ import { prisma } from "../config/db/prisma";
 import validators from "../middlewares/validators";
 import { matchedData, validationResult } from "express-validator";
 import BadRequest400 from "../errors/BadRequest400";
+import { Folder } from "../generated/prisma/client";
 
 const home = [
   async (req: Request, res: Response, next: NextFunction) => {
@@ -29,6 +30,7 @@ const home = [
       });
 
       res.json({
+        parentList: [],
         currentFolder,
         folders,
         files,
@@ -106,6 +108,8 @@ const getFolder = [
         return res.sendStatus(403);
       }
 
+      const parentList = await getParentList(currentFolder);
+
       const folders = await prisma.folder.findMany({
         where: {
           parentId: id,
@@ -119,6 +123,7 @@ const getFolder = [
       });
 
       res.json({
+        parentList,
         currentFolder,
         folders,
         files,
@@ -214,6 +219,23 @@ const renameFolder = [
     }
   },
 ];
+
+async function getParentList(folder: Folder) {
+  const parentList = [];
+
+  let curr = folder;
+  while (curr.parentId) {
+    curr = (await prisma.folder.findFirst({
+      where: { id: curr.parentId },
+    }))!;
+    parentList.push({
+      id: curr.id,
+      name: curr.name,
+    });
+  }
+
+  return parentList.reverse();
+}
 
 export default {
   home,
