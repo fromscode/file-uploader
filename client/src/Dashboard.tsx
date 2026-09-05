@@ -43,8 +43,6 @@ export default function Dashboard() {
     <>
       <Navbar />
       <section className="flex flex-col mx-auto w-xl text-zinc-400 text-lg">
-        <div className="bg-zinc-900 w-full px-6 py-1 mb-5">Name</div>
-
         <CurrentFolderContents
           currentFolderId={currentFolderId}
           setCurrentFolderId={setCurrentFolderId}
@@ -262,6 +260,7 @@ function CurrentFolderContents({
 
   return (
     <div className="relative">
+      <div className="bg-zinc-900 w-full px-7 py-1 mb-5">Name</div>
       <div>
         <div className="mb-10">
           {folders.map((folder) => (
@@ -311,6 +310,10 @@ function CurrentFolderContents({
             </div>
           ))}
         </div>
+
+        {!folders.length && !files.length && (
+          <div className="flex items-center justify-center">No Contents</div>
+        )}
       </div>
 
       <div
@@ -348,14 +351,16 @@ function CurrentFolderContents({
         </div>
       </div>
 
-      {!!(currentFolder?.parentId) && (<div
-        className="absolute top-0 -left-10 hover:bg-zinc-700 rounded-full p-1"
-        onClick={() => {
-          setCurrentFolderId(currentFolder!.parentId!);
-        }}
-      >
-        <IoMdArrowBack className="text-xl cursor-pointer" />
-      </div>)}
+      {!!currentFolder?.parentId && (
+        <div
+          className="absolute top-1 hover:bg-zinc-700 rounded-full p-1"
+          onClick={() => {
+            setCurrentFolderId(currentFolder!.parentId!);
+          }}
+        >
+          <IoMdArrowBack className="text-xl cursor-pointer" />
+        </div>
+      )}
 
       {deleteConfirmationModalDisplayed && (
         <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
