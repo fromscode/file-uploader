@@ -263,7 +263,7 @@ function CurrentFolderContents({
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="relative">
+    <div className="">
       <div className="bg-zinc-900 w-full px-7 py-1 mb-5 text-base flex">
         {parentList.map((parent) => (
           <div>
@@ -281,10 +281,24 @@ function CurrentFolderContents({
         ))}
         <div>
           &nbsp;
-          <span className="">{currentFolder!.name}</span>
+          <span className="">{currentFolder?.name}</span>
         </div>
       </div>
-      <div className="bg-zinc-900 w-full px-7 py-1 mb-5">Name</div>
+      <div className="bg-zinc-900 w-full py-1 mb-5 flex items-center">
+        <div
+          className={
+            currentFolder?.parentId
+              ? "hover:bg-zinc-700 rounded-full p-1 cursor-pointer"
+              : "rounded-full text-zinc-900 p-1"
+          }
+          onClick={() => {
+            setCurrentFolderId(currentFolder!.parentId!);
+          }}
+        >
+          <IoMdArrowBack className="text-xl" />
+        </div>
+        <span>Name</span>
+      </div>
       <div>
         <div className="mb-10">
           {folders.map((folder) => (
@@ -374,17 +388,6 @@ function CurrentFolderContents({
           </div>
         </div>
       </div>
-
-      {!!currentFolder?.parentId && (
-        <div
-          className="absolute top-1 hover:bg-zinc-700 rounded-full p-1"
-          onClick={() => {
-            setCurrentFolderId(currentFolder!.parentId!);
-          }}
-        >
-          <IoMdArrowBack className="text-xl cursor-pointer" />
-        </div>
-      )}
 
       {deleteConfirmationModalDisplayed && (
         <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
