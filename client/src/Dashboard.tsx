@@ -87,6 +87,9 @@ function CurrentFolderContents({
   const [currentFolder, setCurrentFolder] = useState<Folder>();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const [parentList, setParentList] = useState<{ name: string; id: number }[]>(
+    [],
+  );
 
   const [itemToBeDeleted, setItemToBeDeleted] = useState<File | Folder>();
 
@@ -235,6 +238,7 @@ function CurrentFolderContents({
           setCurrentFolder(jsonResponse.currentFolder);
           setFolders(jsonResponse.folders);
           setFiles(jsonResponse.files);
+          setParentList(jsonResponse.parentList);
           break;
         }
         default:
@@ -260,6 +264,26 @@ function CurrentFolderContents({
 
   return (
     <div className="relative">
+      <div className="bg-zinc-900 w-full px-7 py-1 mb-5 text-base flex">
+        {parentList.map((parent) => (
+          <div>
+            &nbsp;
+            <span
+              className="underline underline-offset-2 cursor-pointer hover:no-underline"
+              onClick={() => {
+                setCurrentFolderId(parent.id);
+              }}
+            >
+              {parent.name}
+            </span>
+            {" / "}
+          </div>
+        ))}
+        <div>
+          &nbsp;
+          <span className="">{currentFolder!.name}</span>
+        </div>
+      </div>
       <div className="bg-zinc-900 w-full px-7 py-1 mb-5">Name</div>
       <div>
         <div className="mb-10">
