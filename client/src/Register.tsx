@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useNavigate } from "react-router";
 
 interface RegisterProps {
   toggleDisplay: () => void;
@@ -15,16 +16,24 @@ export default function Register({ toggleDisplay }: RegisterProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const navigate = useNavigate();
+
   const backenduri = import.meta.env.VITE_backend_uri;
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (password != confirmPassword) {
+      setError("Password and Confirm Password fields should match");
+      return;
+    }
 
     try {
       const response = await fetch(backenduri + "register", {
         body: JSON.stringify({ username, password, email }),
         method: "POST",
         mode: "cors",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -37,13 +46,15 @@ export default function Register({ toggleDisplay }: RegisterProps) {
         case 409: {
           const field = (await response.json()).fields[0] as string;
           setError(
-            field.slice(0, 1).toUpperCase + field.slice(1) + " already exists!",
+            field.slice(0, 1).toUpperCase() +
+              field.slice(1) +
+              " already exists!",
           );
           break;
         }
-        case 200:
-          alert("Succesfull");
-          break; // TO-DO: Change this
+        case 201:
+          navigate("/");
+          break;
         case 404:
           setError("Failed to connect to server");
           break;
@@ -101,6 +112,7 @@ export default function Register({ toggleDisplay }: RegisterProps) {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
             />
             {password && (
               <button type="button" onClick={() => setShowPassword((p) => !p)}>

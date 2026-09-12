@@ -67,7 +67,6 @@ const register = [
   validators.validateUsername,
   validators.validateEmail,
   validators.validatePassword,
-  validators.validateConfirmPassword,
   async (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -126,8 +125,7 @@ const register = [
     res.cookie("sid", session.sid, {
       maxAge: MILLISECONDS24HOURS,
       httpOnly: true,
-      sameSite: true,
-      secure: true,
+      sameSite: "lax",
     });
 
     res.sendStatus(201);

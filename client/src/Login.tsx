@@ -41,7 +41,7 @@ export default function Login({ toggleDisplay }: LoginProps) {
           break;
         case 200:
           navigate("/");
-          break; // TO-DO: Change this
+          break;
         case 404:
           setError("Failed to connect to server");
           break;
