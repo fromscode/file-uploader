@@ -6,6 +6,7 @@ import { LuFolderPlus } from "react-icons/lu";
 import { MdDeleteOutline } from "react-icons/md";
 import { AiOutlineLogout } from "react-icons/ai";
 import { IoMdArrowBack } from "react-icons/io";
+import { FaEdit } from "react-icons/fa";
 
 import Navbar from "./Navbar";
 import type { File, Folder } from "./types";
@@ -112,6 +113,54 @@ function CurrentFolderContents({
     deleteConfirmationModalDisplayed,
     setDeleteConfirmationModalDisplayed,
   ] = useState(false);
+
+  const [editModalDisplayed, setEditModalDisplayed] = useState(false);
+  const [itemToBeEdited, setItemToBeEdited] = useState<File | Folder>();
+  const [editItemName, setEditItemName] = useState("");
+
+  async function handleEdit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (itemToBeEdited?.name == editItemName) {
+      setEditModalDisplayed(false);
+      setItemToBeEdited(undefined);
+      setEditItemName("");
+      return;
+    }
+    try {
+      const response = await fetch(
+        backend +
+          (Object.hasOwn(itemToBeEdited!, "url") ? "file/" : "folder/") +
+          itemToBeEdited!.id,
+        {
+          mode: "cors",
+          credentials: "include",
+          body: JSON.stringify({
+            name: editItemName,
+          }),
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+          },
+        },
+      );
+
+      switch (response.status) {
+        case 400:
+        case 403: {
+          console.error(await response.json());
+          break;
+        }
+        case 200: {
+          getData();
+          setEditModalDisplayed(false);
+          setItemToBeEdited(undefined);
+          setEditItemName("");
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   async function handleAddFile(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -322,8 +371,15 @@ function CurrentFolderContents({
               >
                 {folder.name}
               </div>
+              <FaEdit
+                className="ml-auto text-base cursor-pointer text-zinc-400 hover:text-zinc-300"
+                onClick={() => {
+                  setEditModalDisplayed(true);
+                  setItemToBeEdited(folder);
+                }}
+              />
               <MdDeleteOutline
-                className="text-red-500 hover:text-red-700 ml-auto cursor-pointer"
+                className="text-red-500 hover:text-red-700 cursor-pointer"
                 onClick={() => {
                   setDeleteConfirmationModalDisplayed(true);
                   setItemToBeDeleted(folder);
@@ -347,8 +403,15 @@ function CurrentFolderContents({
               >
                 {file.name}
               </a>
+              <FaEdit
+                className="ml-auto text-base cursor-pointer text-zinc-400 hover:text-zinc-300"
+                onClick={() => {
+                  setEditModalDisplayed(true);
+                  setItemToBeEdited(file);
+                }}
+              />
               <MdDeleteOutline
-                className="text-red-500 hover:text-red-700 ml-auto cursor-pointer"
+                className="text-red-500 hover:text-red-700 cursor-pointer"
                 onClick={() => {
                   setDeleteConfirmationModalDisplayed(true);
                   setItemToBeDeleted(file);
@@ -507,6 +570,46 @@ function CurrentFolderContents({
                   className="bg-blue-800 text-white cursor-pointer px-5 py-2 rounded-full text-lg hover:bg-blue-700"
                 >
                   Add Folder
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      )}
+
+      {editModalDisplayed && (
+        <section className="h-screen w-screen absolute left-0 top-0 bg-zinc-800/80 flex flex-col items-center justify-center text-white font-light tracking-tight pb-40">
+          <button
+            className="absolute top-5 right-5 bg-zinc-900 rounded-full px-3 py-1 text-xl hover:opacity-80 cursor-pointer"
+            onClick={() => setEditModalDisplayed(false)}
+          >
+            X
+          </button>
+          <div className="bg-zinc-900 border border-zinc-400 p-3">
+            <h3 className="text-xl mb-10 text-center">
+              Edit {Object.hasOwn(itemToBeEdited!, "url") ? "File" : "Folder"}
+            </h3>
+            <form className="text-base" onSubmit={(e) => handleEdit(e)}>
+              <div className="flex flex-col mb-5">
+                <label htmlFor="name">New Name</label>
+                <input
+                  className="border border-zinc-400 min-w-sm px-2 py-1 text-zinc-400"
+                  type="text"
+                  name="name"
+                  id="name"
+                  placeholder={itemToBeEdited?.name as string}
+                  value={editItemName}
+                  onChange={(e) => setEditItemName(e.target.value)}
+                  ref={fileNameInputRef}
+                  required
+                />
+              </div>
+              <div className="flex flex-col mb-5 items-center justify-center mt-10">
+                <button
+                  type="submit"
+                  className="bg-blue-800 text-white cursor-pointer px-5 py-2 rounded-full text-lg hover:bg-blue-700"
+                >
+                  Confirm
                 </button>
               </div>
             </form>
