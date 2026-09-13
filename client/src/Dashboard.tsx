@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { CiFileOn, CiFolderOn } from "react-icons/ci";
-import { AiOutlineFileAdd } from "react-icons/ai";
 import { LuFolderPlus } from "react-icons/lu";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineUploadFile } from "react-icons/md";
 import { AiOutlineLogout } from "react-icons/ai";
 import { IoMdArrowBack } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
@@ -98,14 +97,14 @@ function CurrentFolderContents({
   const [addFolderModalDisplayed, setAddFolderModalDisplayed] = useState(false);
 
   const [fileName, setFileName] = useState("");
-  const [url, setUrl] = useState("");
+  const [choosenFileName, setChoosenFileName] = useState("No file choosen");
   const [folderName, setFolderName] = useState("");
 
   const addFileRef = useRef<HTMLDivElement>(null);
   const addFolderRef = useRef<HTMLDivElement>(null);
 
   const folderNameInputRef = useRef<HTMLInputElement>(null);
-  const fileNameInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const folderNavigationPane = useRef<HTMLDivElement>(null);
 
@@ -164,37 +163,54 @@ function CurrentFolderContents({
 
   async function handleAddFile(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    try {
-      const response = await fetch(backend + "upload", {
-        mode: "cors",
-        credentials: "include",
-        body: JSON.stringify({
-          name: fileName,
-          url: url,
-          folderId: currentFolder!.id,
-        }),
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-      });
+    console.log("here");
+    const file = fileInputRef.current!.files?.item(0);
+    if (!file) return;
+    console.log(fileInputRef.current!.files);
 
-      switch (response.status) {
-        case 400:
-        case 403: {
-          console.error(await response.json());
-          break;
-        }
-        case 201: {
-          getData();
-          setAddFileModalDisplayed(false);
-          setFileName("");
-          setUrl("");
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
+    //To-Do: fix this
+
+    const body = JSON.stringify({
+      file,
+      name: fileName,
+      folderId: currentFolder!.id,
+    });
+    console.log(body);
+    setAddFileModalDisplayed(false);
+
+    // TO-DO: actually send this to the backend
+
+    // try {
+    //   const response = await fetch(backend + "upload", {
+    //     mode: "cors",
+    //     credentials: "include",
+    //     body: JSON.stringify({
+    //       name: fileName,
+    //       url: url,
+    //       folderId: currentFolder!.id,
+    //     }),
+    //     method: "POST",
+    //     headers: {
+    //       "Content-type": "application/json",
+    //     },
+    //   });
+
+    //   switch (response.status) {
+    //     case 400:
+    //     case 403: {
+    //       console.error(await response.json());
+    //       break;
+    //     }
+    //     case 201: {
+    //       getData();
+    //       setAddFileModalDisplayed(false);
+    //       setFileName("");
+    //       setUrl("");
+    //     }
+    //   }
+    // } catch (e) {
+    //   console.error(e);
+    // }
   }
 
   async function handleAddFolder(e: React.SubmitEvent<HTMLFormElement>) {
@@ -435,14 +451,11 @@ function CurrentFolderContents({
           className="bg-blue-800 rounded-full flex gap-2 items-center justify-center p-3 hover:cursor-pointer text-zinc-950 hover:text-zinc-50"
           onClick={() => {
             setAddFileModalDisplayed(true);
-            setTimeout(() => {
-              fileNameInputRef.current!.focus();
-            }, 0);
           }}
         >
-          <AiOutlineFileAdd />
+          <MdOutlineUploadFile className="font-bold" />
           <div className="hidden text-base" ref={addFileRef}>
-            Add File
+            Upload File
           </div>
         </div>
         <div
@@ -456,7 +469,7 @@ function CurrentFolderContents({
         >
           <LuFolderPlus />
           <div className="hidden text-base" ref={addFolderRef}>
-            Add Folder
+            Create Folder
           </div>
         </div>
       </div>
@@ -499,32 +512,43 @@ function CurrentFolderContents({
           >
             X
           </button>
-          <div className="bg-zinc-900 border border-zinc-400 p-3">
-            <h3 className="text-xl mb-10 text-center">Add File</h3>
+          <div className="bg-zinc-900 border border-zinc-400 p-3 max-w-lg">
+            <h3 className="text-xl mb-10 text-center">Upload File</h3>
             <form className="text-base" onSubmit={(e) => handleAddFile(e)}>
-              <div className="flex flex-col mb-5">
-                <label htmlFor="name">Name</label>
+              <div className="flex mb-5 gap-2">
+                <label
+                  htmlFor="file"
+                  className="flex items-center justify-center border p-1 cursor-pointer hover:bg-zinc-700 min-w-24"
+                >
+                  Choose File
+                </label>
                 <input
-                  className="border border-zinc-400 min-w-sm px-2 py-1 text-zinc-400"
-                  type="text"
-                  name="name"
-                  id="name"
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  ref={fileNameInputRef}
+                  className="hidden"
+                  type="file"
+                  name="file"
+                  id="file"
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    setChoosenFileName(
+                      e.target.value.split("\\").at(-1) ??
+                        "File name unavailable",
+                    );
+                  }}
                   required
                 />
+                <div className="overflow-hidden text-nowrap flex items-center">
+                  {choosenFileName}
+                </div>
               </div>
-              <div className="flex flex-col mb-5">
-                <label htmlFor="url">Url</label>
+              <div className="flex flex-col mb-5 gap-0.5">
+                <label htmlFor="url">Name (optional)</label>
                 <input
                   className="border border-zinc-400 min-w-sm px-2 py-1 text-zinc-400"
                   type="url"
                   name="url"
                   id="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  required
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
                 />
               </div>
               <div className="flex flex-col mb-5 items-center justify-center mt-10">
@@ -532,7 +556,7 @@ function CurrentFolderContents({
                   type="submit"
                   className="bg-blue-800 text-white cursor-pointer px-5 py-2 rounded-full text-lg hover:bg-blue-700"
                 >
-                  Add File
+                  Upload
                 </button>
               </div>
             </form>
@@ -600,7 +624,7 @@ function CurrentFolderContents({
                   placeholder={itemToBeEdited?.name as string}
                   value={editItemName}
                   onChange={(e) => setEditItemName(e.target.value)}
-                  ref={fileNameInputRef}
+                  ref={fileInputRef}
                   required
                 />
               </div>

@@ -31,6 +31,8 @@ const upload = [
 
       if (folder.userId !== req.user!.id) return res.sendStatus(403);
 
+      // TO-DO: fix this
+
       await prisma.file.create({
         data: {
           name,

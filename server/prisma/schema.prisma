@@ -25,10 +25,11 @@ model User {
 }
 
 model Folder {
-  id     Int    @id @default(autoincrement())
-  name   String
-  userId Int    @map("user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            Int      @id @default(autoincrement())
+  name          String
+  last_modified DateTime @default(now()) @updatedAt
+  userId        Int      @map("user_id")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   parent   Folder? @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
   parentId Int?    @map("parent_id")
@@ -41,9 +42,12 @@ model Folder {
 }
 
 model File {
-  id   Int    @id @default(autoincrement())
-  name String
-  url  String
+  id         Int      @id @default(autoincrement())
+  name       String
+  url        String
+  fileType   String
+  uploadTime DateTime @updatedAt
+  Size       Int
 
   folderId Int    @map("folder_id")
   folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
