@@ -315,9 +315,9 @@ function CurrentFolderContents({
     getData();
   }, [getData]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex justify-center">Loading...</div>;
 
-  if (error) return <div>{error}</div>;
+  if (error) return <div className="flex justify-center">{error}</div>;
 
   return (
     <div className="">
